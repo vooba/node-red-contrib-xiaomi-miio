@@ -11,7 +11,7 @@ var propertyCallbacks = {};
 var actionCallbacks = {};
 var motionCallbacks = {};
 
-var disableEventListener = true;
+var disableEventListener = false;
 
 const devices = miio.devices({
 	cacheTime: 300 // 5 minutes. Default is 1800 seconds (30 minutes)
@@ -34,7 +34,8 @@ devices.on('available', reg => {
     	optionDevices.push({
     		id: reg.id,
     		model: device.miioModel,
-    		type: device.type
+            	type: device.type,
+            	address: device.management.address
     	});
     	
     	allDevices[reg.id] = device;
@@ -63,6 +64,11 @@ devices.on('available', reg => {
     
             case 'motion':
                 handleMotion(reg.id, device);
+                break;
+
+            case 'moonlight':
+                console.log("Hanlde Moonlight");
+                handleMoonlight(reg.id, device);
                 break;
     
             default:
@@ -131,6 +137,8 @@ var mapMiioModelToType = function(model) {
         return 'gateway';
     } else if (model.indexOf('repeater') !== -1) {
         return 'repeater';
+    } else if (model.indexOf('moonlight') !== -1) {
+        return 'moonlight';
     } else {
         console.warn('Unknown model ', model);
         return 'unknown';
@@ -232,6 +240,11 @@ function handleMotion(id, device) {
 }
 
 /* ======================================================================================================= */
+function handleMoonlight(id, device) {
+    hookGenericStateAndAction(id, device);
+}
+
+/* ======================================================================================================= */
 function addCallbacks(deviceId, deviceCallbacks, callback) {
 	if (!deviceCallbacks[deviceId]) {
 		deviceCallbacks[deviceId] = [];
@@ -252,5 +265,13 @@ module.exports = {
     },
     registerMotionListener: function(deviceId, callback) {
     	addCallbacks(deviceId, motionCallbacks, callback);
+    },
+    addDevice: function(ip, token) {
+        
+        return miio.device({
+                address: ip,
+                token: token
+            });
+            
     }
 }

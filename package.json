@@ -18,7 +18,8 @@
             "sensor-ht": "sensor-ht/sensor-ht.js",
             "generic": "generic/generic.js",
             "air-purifier": "air-purifier/air-purifier.js",
-            "listener": "listener/listener.js"
+            "listener": "listener/listener.js",
+            "miio-moonlight": "moonlight/moonlight.js"
         }
     },
     "dependencies": {
